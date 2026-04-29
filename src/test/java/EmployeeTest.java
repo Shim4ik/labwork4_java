@@ -10,94 +10,116 @@ class EmployeeTest {
     /** Коректні дані — об'єкт створюється без помилок. */
     @Test
     void shouldCreateEmployeeWithValidData() {
-        Employee emp = new Employee("Іваненко Іван", 30, 20000.0, 5, "Розробник", "ІТ");
+        ContactInfo contact = new ContactInfo("ivan@example.com", "+380501234567");
+        Employee emp = new Employee("Іваненко Іван", 30, 20000.0, 5,
+                Position.DEVELOPER, Department.IT, contact);
         assertAll(
                 () -> assertEquals("Іваненко Іван", emp.getName()),
                 () -> assertEquals(30, emp.getAge()),
                 () -> assertEquals(20000.0, emp.getSalary()),
                 () -> assertEquals(5, emp.getExperience()),
-                () -> assertEquals("Розробник", emp.getPosition()),
-                () -> assertEquals("ІТ", emp.getDepartment())
+                () -> assertEquals(Position.DEVELOPER, emp.getPosition()),
+                () -> assertEquals(Department.IT, emp.getDepartment())
         );
     }
 
     /** Конструктор кидає виняток, якщо ПІБ порожній. */
     @Test
     void shouldThrowWhenNameIsBlank() {
+        ContactInfo contact = new ContactInfo("ivan@example.com", "+380501234567");
         assertThrows(InvalidEmployeeDataException.class, () ->
-                new Employee("   ", 30, 20000.0, 5, "Розробник", "ІТ")
+                new Employee("   ", 30, 20000.0, 5,
+                        Position.DEVELOPER, Department.IT, contact)
         );
     }
 
     /** Конструктор кидає виняток, якщо ПІБ null. */
     @Test
     void shouldThrowWhenNameIsNull() {
+        ContactInfo contact = new ContactInfo("ivan@example.com", "+380501234567");
         assertThrows(InvalidEmployeeDataException.class, () ->
-                new Employee(null, 30, 20000.0, 5, "Розробник", "ІТ")
+                new Employee(null, 30, 20000.0, 5,
+                        Position.DEVELOPER, Department.IT, contact)
         );
     }
 
     /** Конструктор кидає виняток, якщо вік менше 18. */
     @Test
     void shouldThrowWhenAgeTooLow() {
+        ContactInfo contact = new ContactInfo("petro@example.com", "+380501234567");
         assertThrows(InvalidEmployeeDataException.class, () ->
-                new Employee("Петренко Петро", 17, 20000.0, 0, "Стажер", "HR")
+                new Employee("Петренко Петро", 17, 20000.0, 0,
+                        Position.INTERN, Department.HR, contact)
         );
     }
 
     /** Конструктор кидає виняток, якщо вік більше 65. */
     @Test
     void shouldThrowWhenAgeTooHigh() {
+        ContactInfo contact = new ContactInfo("sydir@example.com", "+380501234567");
         assertThrows(InvalidEmployeeDataException.class, () ->
-                new Employee("Сидоренко Сидір", 66, 20000.0, 10, "Менеджер", "Фінанси")
+                new Employee("Сидоренко Сидір", 66, 20000.0, 10,
+                        Position.MANAGER, Department.FINANCE, contact)
         );
     }
 
     /** Конструктор кидає виняток, якщо зарплата дорівнює нулю. */
     @Test
     void shouldThrowWhenSalaryIsZero() {
+        ContactInfo contact = new ContactInfo("olena@example.com", "+380501234567");
         assertThrows(InvalidEmployeeDataException.class, () ->
-                new Employee("Коваль Олена", 25, 0.0, 2, "Аналітик", "Аналітика")
+                new Employee("Коваль Олена", 25, 0.0, 2,
+                        Position.ANALYST, Department.ANALYTICS, contact)
         );
     }
 
     /** Конструктор кидає виняток, якщо зарплата від'ємна. */
     @Test
     void shouldThrowWhenSalaryIsNegative() {
+        ContactInfo contact = new ContactInfo("olena@example.com", "+380501234567");
         assertThrows(InvalidEmployeeDataException.class, () ->
-                new Employee("Коваль Олена", 25, -500.0, 2, "Аналітик", "Аналітика")
+                new Employee("Коваль Олена", 25, -500.0, 2,
+                        Position.ANALYST, Department.ANALYTICS, contact)
         );
     }
 
     /** Конструктор кидає виняток, якщо стаж від'ємний. */
     @Test
     void shouldThrowWhenExperienceIsNegative() {
+        ContactInfo contact = new ContactInfo("tom@example.com", "+380501234567");
         assertThrows(InvalidEmployeeDataException.class, () ->
-                new Employee("Мельник Том", 28, 15000.0, -1, "Дизайнер", "UX")
+                new Employee("Мельник Том", 28, 15000.0, -1,
+                        Position.DESIGNER, Department.UX, contact)
         );
     }
 
     /** Конструктор кидає виняток, якщо стаж перевищує (вік - 18). */
     @Test
     void shouldThrowWhenExperienceExceedsAgeLimit() {
+        ContactInfo contact = new ContactInfo("young@example.com", "+380501234567");
         assertThrows(InvalidEmployeeDataException.class, () ->
-                new Employee("Молодий Спец", 20, 10000.0, 5, "Джуніор", "ІТ")
+                new Employee("Молодий Спец", 20, 10000.0, 5,
+                        Position.INTERN, Department.IT, contact)
         );
     }
 
-    /** Конструктор кидає виняток, якщо посада порожня. */
+    /** Конструктор кидає виняток, якщо посада null. */
     @Test
     void shouldThrowWhenPositionIsBlank() {
+        ContactInfo contact = new ContactInfo("maria@example.com", "+380501234567");
         assertThrows(InvalidEmployeeDataException.class, () ->
-                new Employee("Марія К.", 35, 25000.0, 10, "", "HR")
+                new Employee("Марія К.", 35, 25000.0, 10,
+                        null, Department.HR, contact)
         );
     }
 
     /** Конструктор кидає виняток, якщо відділ null. */
     @Test
     void shouldThrowWhenDepartmentIsNull() {
+        ContactInfo contact = new ContactInfo("maria@example.com", "+380501234567");
         assertThrows(InvalidEmployeeDataException.class, () ->
-                new Employee("Марія К.", 35, 25000.0, 10, "Менеджер", null)
+                new Employee("Марія К.", 35, 25000.0, 10,
+                        Position.MANAGER, null, contact)
         );
     }
 
@@ -106,7 +128,9 @@ class EmployeeTest {
     /** setSalary кидає виняток при від'ємному значенні. */
     @Test
     void shouldThrowWhenSetSalaryIsNegative() {
-        Employee emp = new Employee("Тест Тестович", 30, 10000.0, 5, "Dev", "ІТ");
+        ContactInfo contact = new ContactInfo("test@example.com", "+380501234567");
+        Employee emp = new Employee("Тест Тестович", 30, 10000.0, 5,
+                Position.DEVELOPER, Department.IT, contact);
         assertThrows(InvalidEmployeeDataException.class, () ->
                 emp.setSalary(-1)
         );
@@ -115,7 +139,9 @@ class EmployeeTest {
     /** setAge кидає виняток при некоректному віці. */
     @Test
     void shouldThrowWhenSetAgeIsInvalid() {
-        Employee emp = new Employee("Тест Тестович", 30, 10000.0, 5, "Dev", "ІТ");
+        ContactInfo contact = new ContactInfo("test@example.com", "+380501234567");
+        Employee emp = new Employee("Тест Тестович", 30, 10000.0, 5,
+                Position.DEVELOPER, Department.IT, contact);
         assertThrows(InvalidEmployeeDataException.class, () ->
                 emp.setAge(15)
         );
@@ -124,7 +150,9 @@ class EmployeeTest {
     /** setName кидає виняток при порожньому рядку. */
     @Test
     void shouldThrowWhenSetNameIsBlank() {
-        Employee emp = new Employee("Тест Тестович", 30, 10000.0, 5, "Dev", "ІТ");
+        ContactInfo contact = new ContactInfo("test@example.com", "+380501234567");
+        Employee emp = new Employee("Тест Тестович", 30, 10000.0, 5,
+                Position.DEVELOPER, Department.IT, contact);
         assertThrows(InvalidEmployeeDataException.class, () ->
                 emp.setName("")
         );
@@ -133,7 +161,9 @@ class EmployeeTest {
     /** setExperience кидає виняток при від'ємному стажі. */
     @Test
     void shouldThrowWhenSetExperienceIsNegative() {
-        Employee emp = new Employee("Тест Тестович", 30, 10000.0, 5, "Dev", "ІТ");
+        ContactInfo contact = new ContactInfo("test@example.com", "+380501234567");
+        Employee emp = new Employee("Тест Тестович", 30, 10000.0, 5,
+                Position.DEVELOPER, Department.IT, contact);
         assertThrows(InvalidEmployeeDataException.class, () ->
                 emp.setExperience(-3)
         );
@@ -142,7 +172,9 @@ class EmployeeTest {
     /** setPosition кидає виняток при null. */
     @Test
     void shouldThrowWhenSetPositionIsNull() {
-        Employee emp = new Employee("Тест Тестович", 30, 10000.0, 5, "Dev", "ІТ");
+        ContactInfo contact = new ContactInfo("test@example.com", "+380501234567");
+        Employee emp = new Employee("Тест Тестович", 30, 10000.0, 5,
+                Position.DEVELOPER, Department.IT, contact);
         assertThrows(InvalidEmployeeDataException.class, () ->
                 emp.setPosition(null)
         );
@@ -151,16 +183,20 @@ class EmployeeTest {
     /** setDepartment кидає виняток при порожньому рядку. */
     @Test
     void shouldThrowWhenSetDepartmentIsBlank() {
-        Employee emp = new Employee("Тест Тестович", 30, 10000.0, 5, "Dev", "ІТ");
+        ContactInfo contact = new ContactInfo("test@example.com", "+380501234567");
+        Employee emp = new Employee("Тест Тестович", 30, 10000.0, 5,
+                Position.DEVELOPER, Department.IT, contact);
         assertThrows(InvalidEmployeeDataException.class, () ->
-                emp.setDepartment("   ")
+                emp.setDepartment(null)
         );
     }
 
     /** Коректні значення сеттерів оновлюють поля без помилок. */
     @Test
     void shouldUpdateFieldsWithValidValues() {
-        Employee emp = new Employee("Іван І.", 40, 30000.0, 10, "Лід", "Інженерія");
+        ContactInfo contact = new ContactInfo("ivan@example.com", "+380501234567");
+        Employee emp = new Employee("Іван І.", 40, 30000.0, 10,
+                Position.LEAD, Department.ENGINEERING, contact);
         emp.setSalary(35000.0);
         emp.setName("Іван Оновлений");
         assertEquals(35000.0, emp.getSalary());
