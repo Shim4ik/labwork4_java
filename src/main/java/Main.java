@@ -21,14 +21,25 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("=== Система управління працівниками ===");
 
+        ContactInfo contact = new ContactInfo("ivan@example.com", "+380501234567");
+        Employee emp = new Employee("Іваненко Іван", 30, 20000.0, 5,
+                Position.DEVELOPER, Department.IT, contact);
+        employees.add(emp);
+        ContactInfo contact1 = new ContactInfo("petrenkoivan@example.com", "+380501234568");
+        Employee emp1 = new Employee("Петренко Іван", 35, 25000.0, 10,
+                Position.DEVELOPER, Department.IT, contact1);
+        employees.add(emp1);
+
         boolean running = true;
         while (running) {
             printMenu();
             int choice = readInt("Ваш вибір: ");
             switch (choice) {
-                case 1  -> createEmployee();
-                case 2  -> listEmployees();
-                case 3  -> { System.out.println("До побачення!"); running = false; }
+                case 1 -> createEmployee();
+                case 2 -> listEmployees();
+                case 3 -> copyEmployee();
+                case 4 -> showCount();
+                case 5  -> { System.out.println("До побачення!"); running = false; }
                 default -> System.out.println("[!] Невірний пункт. Введіть 1, 2 або 3.");
             }
         }
@@ -39,7 +50,9 @@ public class Main {
         System.out.println("\n--- Меню ---");
         System.out.println("1. Створити нового працівника");
         System.out.println("2. Показати всіх працівників");
-        System.out.println("3. Вийти");
+        System.out.println("3. Копіювати працівника");
+        System.out.println("4. Показати кількість створених об'єктів");
+        System.out.println("5. Вийти");
     }
 
     /**
@@ -53,10 +66,15 @@ public class Main {
             int    age        = readInt("Вік (18–65): ");
             double salary     = readDouble("Місячна зарплата (грн): ");
             int    experience = readInt("Стаж роботи (років): ");
-            String position   = readNonBlank("Посада: ");
-            String department = readNonBlank("Відділ: ");
+            Position   position   = readPosition();
+            Department department = readDepartment();
 
-            Employee emp = new Employee(name, age, salary, experience, position, department);
+            String email = readNonBlank("Email: ");
+            String phone = readNonBlank("Телефон: ");
+            ContactInfo contact = new ContactInfo(email, phone);
+
+            Employee emp = new Employee(name, age, salary, experience,
+                    position, department, contact);
             employees.add(emp);
             System.out.println("[+] Працівника додано: " + emp);
 
@@ -76,7 +94,9 @@ public class Main {
         }
         System.out.println("\n--- Список працівників ---");
         for (int i = 0; i < employees.size(); i++) {
-            System.out.printf("%d. %s%n", i + 1, employees.get(i));
+            Employee e = employees.get(i);
+            System.out.printf("%d. %s%n", i + 1, e);
+            System.out.printf("   Контакт: %s%n", e.getContact());
         }
     }
 
@@ -94,6 +114,80 @@ public class Main {
                 return line;
             }
             System.out.println("[!] Поле не може бути порожнім. Спробуйте ще раз.");
+        }
+    }
+
+    /**
+     * Копіює існуючого працівника за допомогою конструктора копіювання.
+     */
+    private static void copyEmployee() {
+        if (employees.isEmpty()) {
+            System.out.println("[!] Список працівників порожній. Спочатку створіть працівника.");
+            return;
+        }
+        System.out.println("\n--- Копіювання працівника ---");
+        listEmployees();
+        int index = readInt("Введіть номер працівника для копіювання: ") - 1;
+
+        if (index < 0 || index >= employees.size()) {
+            System.out.println("[!] Невірний номер.");
+            return;
+        }
+
+        try {
+            Employee original = employees.get(index);
+            Employee copy     = new Employee(original); // конструктор копіювання
+            employees.add(copy);
+            System.out.println("[+] Копію створено: " + copy);
+        } catch (InvalidEmployeeDataException e) {
+            System.out.println("[!] Помилка: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Виводить кількість створених об'єктів Employee через статичний геттер.
+     */
+    private static void showCount() {
+        System.out.println("Всього працівників: " + Employee.getCount());
+    }
+
+    /**
+     * Пропонує користувачу вибрати посаду зі списку enum.
+     *
+     * @return обраний {@link Position}
+     */
+    private static Position readPosition() {
+        System.out.println("Оберіть посаду:");
+        Position[] values = Position.values();
+        for (int i = 0; i < values.length; i++) {
+            System.out.printf("  %d. %s%n", i + 1, values[i].getDisplayName());
+        }
+        while (true) {
+            int idx = readInt("Номер посади: ");
+            if (idx >= 1 && idx <= values.length) {
+                return values[idx - 1];
+            }
+            System.out.println("[!] Введіть число від 1 до " + values.length + ".");
+        }
+    }
+
+    /**
+     * Пропонує користувачу вибрати відділ зі списку enum.
+     *
+     * @return обраний {@link Department}
+     */
+    private static Department readDepartment() {
+        System.out.println("Оберіть відділ:");
+        Department[] values = Department.values();
+        for (int i = 0; i < values.length; i++) {
+            System.out.printf("  %d. %s%n", i + 1, values[i].getDisplayName());
+        }
+        while (true) {
+            int idx = readInt("Номер відділу: ");
+            if (idx >= 1 && idx <= values.length) {
+                return values[idx - 1];
+            }
+            System.out.println("[!] Введіть число від 1 до " + values.length + ".");
         }
     }
 
