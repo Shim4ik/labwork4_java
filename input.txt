@@ -1,0 +1,6 @@
+Employee|Іванов Іван Іванович|30|25000.0|5|DEVELOPER|IT
+FullTimeEmployee|Петренко Олена|28|18000.0|3|MANAGER|HR|15.0
+ContractEmployee|Сидоренко Максим|35|22000.0|10|ANALYST|FINANCE|24
+RemoteEmployee|Коваленко Анна|27|15000.0|2|DESIGNER|UX|Poland|25.5
+InternEmployee|Мельник Дмитро|22|8000.0|1|INTERN|IT|КНУ|6
+Employee|ПІБ1|18|10.0|0|DEVELOPER|IT
