@@ -3,7 +3,6 @@
  * Усі поля перевіряються при створенні та зміні.
  */
 public class Employee {
-    private static int count = 0;
 
     private String name;       // ПІБ працівника
     private int age;           // Вік (18–65)
@@ -11,7 +10,6 @@ public class Employee {
     private int experience;    // Стаж роботи в роках
     private Position position;   // Посада
     private Department department; // Відділ
-    private ContactInfo contact;    // агрегація
 
     /**
      * Створює нового працівника з перевіркою всіх параметрів.
@@ -25,42 +23,16 @@ public class Employee {
      * @throws InvalidEmployeeDataException якщо будь-який параметр некоректний
      */
     public Employee(String name, int age, double salary, int experience,
-                    Position position, Department department, ContactInfo contact) {
+                    Position position, Department department) {
         setName(name);
         setAge(age);
         setSalary(salary);
         setExperience(experience);
         setPosition(position);
         setDepartment(department);
-        setContact(contact);
-        count++;
-    }
-
-    /**
-     * Конструктор копіювання. Створює незалежну копію працівника.
-     * Збільшує статичний лічильник об'єктів.
-     *
-     * @param other працівник для копіювання
-     * @throws InvalidEmployeeDataException якщо other є null
-     */
-    public Employee(Employee other) {
-        if (other == null) {
-            throw new InvalidEmployeeDataException("Працівник для копіювання не може бути null.");
-        }
-        this.name       = other.name;
-        this.age        = other.age;
-        this.salary     = other.salary;
-        this.experience = other.experience;
-        this.position   = other.position;
-        this.department = other.department;
-        this.contact    = new ContactInfo(other.contact); // глибоке копіювання
-        count++;
     }
 
     // Геттери
-
-    /** @return кількість об'єктів */
-    public static int getCount() { return count; }
 
     /** @return ПІБ працівника */
     public String getName()       { return name; }
@@ -79,9 +51,6 @@ public class Employee {
 
     /** @return відділ */
     public Department getDepartment() { return department; }
-
-    /** @return контактна інформація */
-    public ContactInfo getContact()   { return contact; }
 
     // Сеттери з валідацією
 
@@ -171,24 +140,11 @@ public class Employee {
         this.department = department;
     }
 
-    /**
-     * Встановлює контактну інформацію працівника.
-     *
-     * @param contact об'єкт {@link ContactInfo} (не null)
-     * @throws InvalidEmployeeDataException якщо contact є null
-     */
-    public void setContact(ContactInfo contact) {
-        if (contact == null) {
-            throw new InvalidEmployeeDataException("Контактна інформація не може бути null.");
-        }
-        this.contact = contact;
-    }
-
     /** @return рядкове представлення об'єкта */
     @Override
     public String toString() {
         return String.format(
-                "Працівник{ПІБ='%s', вік=%d, зарплата=%.2f грн, стаж=%d р., посада='%s', відділ='%s'}",
+                "{ПІБ='%s', вік=%d, зарплата=%.2f грн, стаж=%d р., посада='%s', відділ='%s'}",
                 name, age, salary, experience, position, department);
     }
 }
