@@ -21,14 +21,6 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("=== Система управління працівниками ===");
 
-        Employee emp = new Employee("Іваненко Іван", 30, 20000.0, 5,
-                Position.DEVELOPER, Department.IT);
-        employees.add(emp);
-
-        Employee emp1 = new Employee("Петренко Іван", 35, 25000.0, 10,
-                Position.DEVELOPER, Department.IT);
-        employees.add(emp1);
-
         boolean running = true;
         while (running) {
             printMenu();
