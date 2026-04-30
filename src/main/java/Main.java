@@ -21,37 +21,50 @@ public class Main {
     public static void main(String[] args) {
         System.out.println("=== Система управління працівниками ===");
 
-        Employee emp = new Employee("Іваненко Іван", 30, 20000.0, 5,
-                Position.DEVELOPER, Department.IT);
-        employees.add(emp);
-
-        Employee emp1 = new Employee("Петренко Іван", 35, 25000.0, 10,
-                Position.DEVELOPER, Department.IT);
-        employees.add(emp1);
-
         boolean running = true;
         while (running) {
             printMenu();
             int choice = readInt("Ваш вибір: ");
             switch (choice) {
-                case 1 -> createEmployee();
+                case 1 -> createObject();
                 case 2 -> listEmployees();
-                case 3 -> createFullTimeEmployee();
-                case 4 -> createContractEmployee();
-                case 5 -> { System.out.println("До побачення!"); running = false; }
+                case 3 -> { System.out.println("До побачення!"); running = false; }
                 default -> System.out.println("[!] Невірний пункт. Введіть 1, 2 або 3.");
             }
         }
     }
 
-    /** Виводить пункти меню. */
+    /** Виводить пункти головного меню. */
     private static void printMenu() {
         System.out.println("\n--- Меню ---");
-        System.out.println("1. Створити звичайного працівника");
-        System.out.println("2. Показати всіх працівників");
-        System.out.println("3. Створити Full-time працівника");
-        System.out.println("4. Створити Contract працівника");
-        System.out.println("5. Вийти");
+        System.out.println("1. Створити новий об'єкт");
+        System.out.println("2. Вивести інформацію про всі об'єкти");
+        System.out.println("3. Завершити роботу програми");
+    }
+
+    /**
+     * Показує підменю вибору типу об'єкта та делегує створення
+     * відповідному методу. Надає можливість повернення до головного меню.
+     */
+    private static void createObject() {
+        System.out.println("\n--- Оберіть тип об'єкта ---");
+        System.out.println("1. Employee (звичайний працівник)");
+        System.out.println("2. FullTimeEmployee (працівник на повний день)");
+        System.out.println("3. ContractEmployee (контрактний працівник)");
+        System.out.println("4. RemoteEmployee (віддалений працівник)");
+        System.out.println("5. InternEmployee (стажер)");
+        System.out.println("0. Повернутися до головного меню");
+
+        int choice = readInt("Ваш вибір: ");
+        switch (choice) {
+            case 1 -> createEmployee();
+            case 2 -> createFullTimeEmployee();
+            case 3 -> createContractEmployee();
+            case 4 -> createRemoteEmployee();
+            case 5 -> createInternEmployee();
+            case 0 -> System.out.println("[*] Повернення до головного меню.");
+            default -> System.out.println("[!] Невірний тип. Повернення до головного меню.");
+        }
     }
 
     /**
@@ -125,6 +138,58 @@ public class Main {
                     position, dept, months);
             employees.add(emp);
             System.out.println("[+] Contract працівника додано: " + emp);
+        } catch (InvalidEmployeeDataException e) {
+            System.out.println("[!] Помилка: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Зчитує дані з клавіатури та створює віддаленого працівника.
+     * Додатково запитує країну проживання та погодинну ставку.
+     * При помилці валідації виводить повідомлення і повертається до меню.
+     */
+    private static void createRemoteEmployee() {
+        System.out.println("\n--- Новий Remote працівник ---");
+        try {
+            String     name        = readNonBlank("ПІБ: ");
+            int        age         = readInt("Вік (18–65): ");
+            double     salary      = readDouble("Зарплата (грн): ");
+            int        experience  = readInt("Стаж (років): ");
+            Position   position    = readPosition();
+            Department dept        = readDepartment();
+            String     country     = readNonBlank("Країна проживання: ");
+            double     hourlyRate  = readDouble("Погодинна ставка ($/год): ");
+
+            RemoteEmployee emp = new RemoteEmployee(name, age, salary, experience,
+                    position, dept, country, hourlyRate);
+            employees.add(emp);
+            System.out.println("[+] Remote працівника додано: " + emp);
+        } catch (InvalidEmployeeDataException e) {
+            System.out.println("[!] Помилка: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Зчитує дані з клавіатури та створює працівника-стажера.
+     * Додатково запитує назву університету та тривалість стажування.
+     * При помилці валідації виводить повідомлення і повертається до меню.
+     */
+    private static void createInternEmployee() {
+        System.out.println("\n--- Новий Intern працівник ---");
+        try {
+            String     name      = readNonBlank("ПІБ: ");
+            int        age       = readInt("Вік (18–65): ");
+            double     salary    = readDouble("Зарплата (грн): ");
+            int        experience = readInt("Стаж (років): ");
+            Position   position  = readPosition();
+            Department dept      = readDepartment();
+            String     university = readNonBlank("Університет: ");
+            int        duration  = readInt("Тривалість стажування (місяців, 1–12): ");
+
+            InternEmployee emp = new InternEmployee(name, age, salary, experience,
+                    position, dept, university, duration);
+            employees.add(emp);
+            System.out.println("[+] Intern працівника додано: " + emp);
         } catch (InvalidEmployeeDataException e) {
             System.out.println("[!] Помилка: " + e.getMessage());
         }
