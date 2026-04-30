@@ -26,24 +26,45 @@ public class Main {
             printMenu();
             int choice = readInt("Ваш вибір: ");
             switch (choice) {
-                case 1 -> createEmployee();
+                case 1 -> createObject();
                 case 2 -> listEmployees();
-                case 3 -> createFullTimeEmployee();
-                case 4 -> createContractEmployee();
-                case 5 -> { System.out.println("До побачення!"); running = false; }
+                case 3 -> { System.out.println("До побачення!"); running = false; }
                 default -> System.out.println("[!] Невірний пункт. Введіть 1, 2 або 3.");
             }
         }
     }
 
-    /** Виводить пункти меню. */
+    /** Виводить пункти головного меню. */
     private static void printMenu() {
         System.out.println("\n--- Меню ---");
-        System.out.println("1. Створити звичайного працівника");
-        System.out.println("2. Показати всіх працівників");
-        System.out.println("3. Створити Full-time працівника");
-        System.out.println("4. Створити Contract працівника");
-        System.out.println("5. Вийти");
+        System.out.println("1. Створити новий об'єкт");
+        System.out.println("2. Вивести інформацію про всі об'єкти");
+        System.out.println("3. Завершити роботу програми");
+    }
+
+    /**
+     * Показує підменю вибору типу об'єкта та делегує створення
+     * відповідному методу. Надає можливість повернення до головного меню.
+     */
+    private static void createObject() {
+        System.out.println("\n--- Оберіть тип об'єкта ---");
+        System.out.println("1. Employee (звичайний працівник)");
+        System.out.println("2. FullTimeEmployee (працівник на повний день)");
+        System.out.println("3. ContractEmployee (контрактний працівник)");
+        System.out.println("4. RemoteEmployee (віддалений працівник)");
+        System.out.println("5. InternEmployee (стажер)");
+        System.out.println("0. Повернутися до головного меню");
+
+        int choice = readInt("Ваш вибір: ");
+        switch (choice) {
+            case 1 -> createEmployee();
+            case 2 -> createFullTimeEmployee();
+            case 3 -> createContractEmployee();
+            case 4 -> createRemoteEmployee();
+            case 5 -> createInternEmployee();
+            case 0 -> System.out.println("[*] Повернення до головного меню.");
+            default -> System.out.println("[!] Невірний тип. Повернення до головного меню.");
+        }
     }
 
     /**
@@ -120,6 +141,12 @@ public class Main {
         } catch (InvalidEmployeeDataException e) {
             System.out.println("[!] Помилка: " + e.getMessage());
         }
+    }
+
+    private static void createRemoteEmployee() {
+    }
+
+    private static void createInternEmployee() {
     }
 
     /**
