@@ -143,10 +143,56 @@ public class Main {
         }
     }
 
+    /**
+     * Зчитує дані з клавіатури та створює віддаленого працівника.
+     * Додатково запитує країну проживання та погодинну ставку.
+     * При помилці валідації виводить повідомлення і повертається до меню.
+     */
     private static void createRemoteEmployee() {
+        System.out.println("\n--- Новий Remote працівник ---");
+        try {
+            String     name        = readNonBlank("ПІБ: ");
+            int        age         = readInt("Вік (18–65): ");
+            double     salary      = readDouble("Зарплата (грн): ");
+            int        experience  = readInt("Стаж (років): ");
+            Position   position    = readPosition();
+            Department dept        = readDepartment();
+            String     country     = readNonBlank("Країна проживання: ");
+            double     hourlyRate  = readDouble("Погодинна ставка ($/год): ");
+
+            RemoteEmployee emp = new RemoteEmployee(name, age, salary, experience,
+                    position, dept, country, hourlyRate);
+            employees.add(emp);
+            System.out.println("[+] Remote працівника додано: " + emp);
+        } catch (InvalidEmployeeDataException e) {
+            System.out.println("[!] Помилка: " + e.getMessage());
+        }
     }
 
+    /**
+     * Зчитує дані з клавіатури та створює працівника-стажера.
+     * Додатково запитує назву університету та тривалість стажування.
+     * При помилці валідації виводить повідомлення і повертається до меню.
+     */
     private static void createInternEmployee() {
+        System.out.println("\n--- Новий Intern працівник ---");
+        try {
+            String     name      = readNonBlank("ПІБ: ");
+            int        age       = readInt("Вік (18–65): ");
+            double     salary    = readDouble("Зарплата (грн): ");
+            int        experience = readInt("Стаж (років): ");
+            Position   position  = readPosition();
+            Department dept      = readDepartment();
+            String     university = readNonBlank("Університет: ");
+            int        duration  = readInt("Тривалість стажування (місяців, 1–12): ");
+
+            InternEmployee emp = new InternEmployee(name, age, salary, experience,
+                    position, dept, university, duration);
+            employees.add(emp);
+            System.out.println("[+] Intern працівника додано: " + emp);
+        } catch (InvalidEmployeeDataException e) {
+            System.out.println("[!] Помилка: " + e.getMessage());
+        }
     }
 
     /**
