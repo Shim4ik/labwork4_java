@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.io.*;
+import java.sql.SQLException;
 
 /**
  * Головний клас програми. Реалізує консольне меню для керування компанією та її працівниками.
@@ -11,16 +12,40 @@ public class Main {
     // Поточна компанія (завантажується з файлу або створюється вручну)
     private static Company company = null;
 
+    // Менеджер бази даних (ініціалізується з аргументів командного рядка)
+    private static DatabaseManager dbManager = null;
+
     // Сканер для зчитування введення з клавіатури
     private static final Scanner scanner = new Scanner(System.in);
 
     /**
      * Точка входу в програму. Показує меню до вибору «Вийти».
      *
-     * @param args аргументи командного рядка (не використовуються)
+     * @param args args[0] — шлях до файлу конфігурації БД
      */
     public static void main(String[] args) {
         System.out.println("=== Система управління компанією ===");
+
+        // --- Ініціалізація підключення до БД ---
+        if (args.length > 0) {
+            String configPath = args[0];
+            try {
+                dbManager = new DatabaseManager(configPath);
+                if (dbManager.testConnection()) {
+                    System.out.println("[DB] Підключення до бази даних успішне.");
+                } else {
+                    System.out.println("[DB] Не вдалося підключитись до БД. Робота продовжується без збереження до БД.");
+                    dbManager = null;
+                }
+            } catch (IOException e) {
+                System.err.println("[DB] Помилка читання конфігурації (" + configPath + "): " + e.getMessage());
+                System.out.println("[DB] Робота продовжується без збереження до БД.");
+                dbManager = null;
+            }
+        } else {
+            System.out.println("[DB] Шлях до конфігурації не вказано.");
+            System.out.println("[DB] Робота продовжується без збереження до БД.");
+        }
 
         loadFromFile();
 
@@ -41,9 +66,44 @@ public class Main {
                 case 2 -> createObject();
                 case 3 -> listEmployees();
                 case 4 -> showCompanyInfo();
-                case 5 -> { saveToFile(); System.out.println("До побачення!"); running = false; }
+                case 5 -> { saveToFile(); saveToDatabase(); System.out.println("До побачення!"); running = false; }
                 default -> System.out.println("[!] Невірний пункт. Введіть 1-5.");
             }
+        }
+    }
+
+    /**
+     * Зберігає всіх працівників компанії до бази даних.
+     * Якщо dbManager не ініціалізовано — пропускає.
+     */
+    private static void saveToDatabase() {
+        if (dbManager == null) {
+            System.out.println("[DB] Збереження до БД пропущено (немає підключення).");
+            return;
+        }
+        System.out.println("[DB] Збереження працівників до бази даних...");
+        List<Company.EmployeeRecord> records = company.getRecords();
+        if (records.isEmpty()) {
+            System.out.println("[DB] Немає записів для збереження.");
+            return;
+        }
+        dbManager.saveAll(records);
+    }
+
+    /**
+     * Зберігає один щойно створений запис до БД одразу після додавання.
+     *
+     * @param record запис для збереження
+     */
+    private static void saveRecordToDatabase(Company.EmployeeRecord record) {
+        if (dbManager == null) {
+            return;
+        }
+        try {
+            dbManager.saveEmployee(record);
+            System.out.println("[DB] Запис збережено до бази даних.");
+        } catch (SQLException e) {
+            System.err.println("[DB] Помилка збереження до БД: " + e.getMessage());
         }
     }
 
@@ -174,6 +234,11 @@ public class Main {
         int quantity = readPositiveInt("Кількість таких працівників: ");
         company.addNewEmployee(emp, quantity);
         System.out.println("[+] Додано (кількість: " + quantity + "): " + emp);
+
+        Company.EmployeeRecord lastRecord =
+                company.getRecords().get(company.getRecords().size() - 1);
+
+        saveRecordToDatabase(lastRecord);
     }
 
     /**
