@@ -29,9 +29,10 @@ public class Main {
             printMenu();
             int choice = readInt("Ваш вибір: ");
             switch (choice) {
-                case 1 -> createObject();
-                case 2 -> listEmployees();
-                case 3 -> { saveEmployeesToFile(); System.out.println("До побачення!");
+                case 1 -> runSearchMenu();
+                case 2 -> createObject();
+                case 3 -> listEmployees();
+                case 4 -> { saveEmployeesToFile(); System.out.println("До побачення!");
                     running = false;}
                 default -> System.out.println("[!] Невірний пункт. Введіть 1, 2 або 3.");
             }
@@ -40,10 +41,147 @@ public class Main {
 
     /** Виводить пункти головного меню. */
     private static void printMenu() {
-        System.out.println("\n--- Меню ---");
-        System.out.println("1. Створити новий об'єкт");
-        System.out.println("2. Вивести інформацію про всі об'єкти");
-        System.out.println("3. Завершити роботу програми");
+        System.out.println("\n1. Пошук об'єкта");
+        System.out.println("2. Створити новий об'єкт");
+        System.out.println("3. Вивести інформацію про всі об'єкти");
+        System.out.println("4. Завершити роботу програми");
+    }
+
+    /** Виводить підменю пошуку та обробляє вибір користувача. */
+    private static void runSearchMenu() {
+        boolean inSearch = true;
+        while (inSearch) {
+            System.out.println("\n--- Пошук об'єкта ---");
+            System.out.println("1. Пошук за діапазоном зарплати");
+            System.out.println("2. Пошук за посадою");
+            System.out.println("3. Пошук за відділом");
+            System.out.println("0. Повернутися до головного меню");
+
+            int choice = readInt("Ваш вибір: ");
+            switch (choice) {
+                case 1 -> searchBySalaryRange();
+                case 2 -> searchByPosition();
+                case 3 -> searchByDepartment();
+                case 0 -> inSearch = false;
+                default -> System.out.println("[!] Невірний пункт. Спробуйте ще раз.");
+            }
+        }
+    }
+
+    /**
+     * Зчитує діапазон зарплати та виводить усіх працівників,
+     * чия зарплата потрапляє в цей діапазон.
+     */
+    private static void searchBySalaryRange() {
+        System.out.println("\n--- Пошук за діапазоном зарплати ---");
+        double min = readDouble("Мінімальна зарплата (грн): ");
+        double max = readDouble("Максимальна зарплата (грн): ");
+
+        if (min > max) {
+            System.out.println("[!] Мінімальна зарплата не може перевищувати максимальну.");
+            return;
+        }
+
+        List<Employee> results = findBySalaryRange(employees, min, max);
+        printSearchResults(results,
+                String.format("зарплата від %.2f до %.2f грн", min, max));
+    }
+
+    /**
+     * Повертає всіх працівників, чия зарплата знаходиться в межах [min, max].
+     * Колекція не змінюється під час пошуку.
+     *
+     * @param source список для пошуку
+     * @param min    мінімальна зарплата
+     * @param max    максимальна зарплата
+     * @return список знайдених працівників (може бути порожнім)
+     */
+    private static List<Employee> findBySalaryRange(List<Employee> source,
+                                                    double min, double max) {
+        List<Employee> result = new ArrayList<>();
+        for (Employee emp : source) {
+            if (emp.getSalary() >= min && emp.getSalary() <= max) {
+                result.add(emp);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Пропонує обрати посаду та виводить усіх працівників з цією посадою.
+     */
+    private static void searchByPosition() {
+        System.out.println("\n--- Пошук за посадою ---");
+        Position position = readPosition();
+
+        List<Employee> results = findByPosition(employees, position);
+        printSearchResults(results, "посада: " + position.getDisplayName());
+    }
+
+    /**
+     * Повертає всіх працівників із заданою посадою.
+     * Колекція не змінюється під час пошуку.
+     *
+     * @param source   список для пошуку
+     * @param position посада для фільтрації
+     * @return список знайдених працівників (може бути порожнім)
+     */
+    private static List<Employee> findByPosition(List<Employee> source, Position position) {
+        List<Employee> result = new ArrayList<>();
+        for (Employee emp : source) {
+            if (emp.getPosition() == position) {
+                result.add(emp);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Пропонує обрати відділ та виводить усіх працівників цього відділу.
+     */
+    private static void searchByDepartment() {
+        System.out.println("\n--- Пошук за відділом ---");
+        Department department = readDepartment();
+
+        List<Employee> results = findByDepartment(employees, department);
+        printSearchResults(results, "відділ: " + department.getDisplayName());
+    }
+
+    /**
+     * Повертає всіх працівників із заданого відділу.
+     * Колекція не змінюється під час пошуку.
+     *
+     * @param source     список для пошуку
+     * @param department відділ для фільтрації
+     * @return список знайдених працівників (може бути порожнім)
+     */
+    private static List<Employee> findByDepartment(List<Employee> source, Department department) {
+        List<Employee> result = new ArrayList<>();
+        for (Employee emp : source) {
+            if (emp.getDepartment() == department) {
+                result.add(emp);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Виводить результати пошуку або повідомлення про відсутність збігів.
+     *
+     * @param results  знайдені працівники
+     * @param criteria опис критерію пошуку для виведення
+     */
+    private static void printSearchResults(List<Employee> results, String criteria) {
+        System.out.println("\n--- Результати пошуку (" + criteria + ") ---");
+        if (results.isEmpty()) {
+            System.out.println("[!] Жоден працівник не відповідає умовам пошуку.");
+            return;
+        }
+        System.out.println("Знайдено: " + results.size() + " працівник(ів)");
+        for (int i = 0; i < results.size(); i++) {
+            Employee e = results.get(i);
+            System.out.printf("%d. [%s] %s%n", i + 1, e.getClass().getSimpleName(), e);
+        }
     }
 
     /**
