@@ -1,3 +1,6 @@
+import java.text.Collator;
+import java.util.Locale;
+
 /**
  * Клас представляє працівника підприємства.
  * Усі поля перевіряються при створенні та зміні.
@@ -148,7 +151,12 @@ public abstract class Employee implements Comparable<Employee> {
      */
     @Override
     public int compareTo(Employee other) {
-        return this.name.compareToIgnoreCase(other.name);
+        Collator ukrainianCollator = Collator.getInstance(new Locale("uk", "UA"));
+
+        // Встановлюємо силу порівняння TERTIARY (враховує і букви, і регістр, і акценти)
+        ukrainianCollator.setStrength(Collator.TERTIARY);
+
+        return ukrainianCollator.compare(this.name, other.name);
     }
 
     /** @return рядкове представлення об'єкта (реалізується в кожному підкласі) */
