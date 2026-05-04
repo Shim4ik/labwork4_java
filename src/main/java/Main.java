@@ -2,6 +2,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.io.*;
+import java.util.Comparator;
+import java.text.Collator;
+import java.util.Locale;
+
 
 /**
  * Головний клас програми. Реалізує консольне меню для керування компанією та її працівниками.
@@ -195,22 +199,86 @@ public class Main {
     }
 
     /**
-     * Виводить список усіх збережених працівників у відсортованому порядку (за ПІБ).
-     * Використовує Comparable, реалізований у класі Employee.
-     * Сортування за ПІБ (без урахування регістру).
+     * Показує підменю вибору критерію сортування та виводить відсортований список.
+     * Для кожного критерію використовується анонімний внутрішній клас Comparator.
      */
     private static void listEmployeesSorted() {
-        System.out.println("\n--- Відсортований список працівників (за ПІБ) ---");
         List<Company.EmployeeRecord> records = company.getRecords();
         if (records.isEmpty()) {
             System.out.println("[!] Колекція порожня — нема чого сортувати.");
             return;
         }
 
+        System.out.println("\n╔═══════════════════════════════════════╗");
+        System.out.println("║       ОБЕРІТЬ КРИТЕРІЙ СОРТУВАННЯ     ║");
+        System.out.println("╠═══════════════════════════════════════╣");
+        System.out.println("║  1. Сортувати за ПІБ (А→Я)            ║");
+        System.out.println("║  2. Сортувати за зарплатою (↑)        ║");
+        System.out.println("║  3. Сортувати за стажем (↓)           ║");
+        System.out.println("║  0. Повернутися до головного меню     ║");
+        System.out.println("╚═══════════════════════════════════════╝");
+
+        int choice = readInt("Ваш вибір: ");
+
+        if (choice == 0) {
+            System.out.println("[*] Повернення до головного меню.");
+            return;
+        }
+
+        // Анонімний внутрішній клас — сортування за ПІБ
+        Comparator<Company.EmployeeRecord> byName = new Comparator<Company.EmployeeRecord>() {
+            // Створюємо екземпляр Collator для української мови
+            private final Collator collator = Collator.getInstance(new Locale("uk", "UA"));
+
+            @Override
+            public int compare(Company.EmployeeRecord r1, Company.EmployeeRecord r2) {
+                collator.setStrength(Collator.TERTIARY);
+                return collator.compare(r1.getEmployee().getName(), r2.getEmployee().getName());
+            }
+        };
+
+        // Анонімний внутрішній клас — сортування за зарплатою за зростанням
+        Comparator<Company.EmployeeRecord> bySalaryAsc = new Comparator<Company.EmployeeRecord>() {
+            @Override
+            public int compare(Company.EmployeeRecord r1, Company.EmployeeRecord r2) {
+                return Double.compare(r1.getEmployee().getSalary(), r2.getEmployee().getSalary());
+            }
+        };
+
+        // Анонімний внутрішній клас — сортування за стажем за спаданням
+        Comparator<Company.EmployeeRecord> byExperienceDesc = new Comparator<Company.EmployeeRecord>() {
+            @Override
+            public int compare(Company.EmployeeRecord r1, Company.EmployeeRecord r2) {
+                return Integer.compare(r2.getEmployee().getExperience(), r1.getEmployee().getExperience());
+            }
+        };
+
+        Comparator<Company.EmployeeRecord> comparator;
+        String criteriaLabel;
+
+        switch (choice) {
+            case 1:
+                comparator    = byName;
+                criteriaLabel = "за ПІБ (А→Я)";
+                break;
+            case 2:
+                comparator    = bySalaryAsc;
+                criteriaLabel = "за зарплатою (від меншої до більшої)";
+                break;
+            case 3:
+                comparator    = byExperienceDesc;
+                criteriaLabel = "за стажем (від більшого до меншого)";
+                break;
+            default:
+                System.out.println("[!] Невірний пункт. Повернення до головного меню.");
+                return;
+        }
+
         // Копіюємо, щоб не змінювати оригінальний порядок у компанії
         List<Company.EmployeeRecord> sorted = new ArrayList<>(records);
-        sorted.sort((r1, r2) -> r1.getEmployee().compareTo(r2.getEmployee()));
+        java.util.Collections.sort(sorted, comparator);
 
+        System.out.println("\n--- Відсортований список працівників (" + criteriaLabel + ") ---");
         for (int i = 0; i < sorted.size(); i++) {
             System.out.printf("%d. %s%n", i + 1, sorted.get(i));
         }
