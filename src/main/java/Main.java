@@ -40,8 +40,9 @@ public class Main {
                 case 1 -> runSearchMenu();
                 case 2 -> createObject();
                 case 3 -> listEmployees();
-                case 4 -> showCompanyInfo();
-                case 5 -> { saveToFile(); System.out.println("До побачення!"); running = false; }
+                case 4 -> listEmployeesSorted();
+                case 5 -> showCompanyInfo();
+                case 6 -> { saveToFile(); System.out.println("До побачення!"); running = false; }
                 default -> System.out.println("[!] Невірний пункт. Введіть 1-5.");
             }
         }
@@ -55,8 +56,9 @@ public class Main {
         System.out.println("║  1. Пошук об'єкта                     ║");
         System.out.println("║  2. Створити новий об'єкт             ║");
         System.out.println("║  3. Вивести інформацію про всі об'єкти║");
-        System.out.println("║  4. Інформація про компанію           ║");
-        System.out.println("║  5. Зберегти та завершити             ║");
+        System.out.println("║  4. Вивести відсортовану інформацію   ║");
+        System.out.println("║  5. Інформація про компанію           ║");
+        System.out.println("║  6. Зберегти та завершити             ║");
         System.out.println("╚═══════════════════════════════════════╝");
     }
 
@@ -146,11 +148,10 @@ public class Main {
      */
     private static void createObject() {
         System.out.println("\n--- Оберіть тип об'єкта ---");
-        System.out.println("1. Employee (звичайний працівник)");
-        System.out.println("2. FullTimeEmployee (працівник на повний день)");
-        System.out.println("3. ContractEmployee (контрактний працівник)");
-        System.out.println("4. RemoteEmployee (віддалений працівник)");
-        System.out.println("5. InternEmployee (стажер)");
+        System.out.println("1. FullTimeEmployee (працівник на повний день)");
+        System.out.println("2. ContractEmployee (контрактний працівник)");
+        System.out.println("3. RemoteEmployee (віддалений працівник)");
+        System.out.println("4. InternEmployee (стажер)");
         System.out.println("0. Повернутися до головного меню");
 
         int choice = readInt("Ваш вибір: ");
@@ -158,11 +159,10 @@ public class Main {
 
         try {
             switch (choice) {
-                case 1 -> emp = createEmployee();
-                case 2 -> emp = createFullTimeEmployee();
-                case 3 -> emp = createContractEmployee();
-                case 4 -> emp = createRemoteEmployee();
-                case 5 -> emp = createInternEmployee();
+                case 1 -> emp = createFullTimeEmployee();
+                case 2 -> emp = createContractEmployee();
+                case 3 -> emp = createRemoteEmployee();
+                case 4 -> emp = createInternEmployee();
                 case 0 -> { System.out.println("[*] Повернення до головного меню."); return; }
                 default -> { System.out.println("[!] Невірний тип. Повернення до головного меню."); return; }
             }
@@ -191,6 +191,30 @@ public class Main {
             System.out.printf("%d. %s%n", i + 1, records.get(i));
         }
         System.out.println("Всього записів: " + records.size()
+                + " | Всього працівників: " + company.getTotalEmployeeCount());
+    }
+
+    /**
+     * Виводить список усіх збережених працівників у відсортованому порядку (за ПІБ).
+     * Використовує Comparable, реалізований у класі Employee.
+     * Сортування за ПІБ (без урахування регістру).
+     */
+    private static void listEmployeesSorted() {
+        System.out.println("\n--- Відсортований список працівників (за ПІБ) ---");
+        List<Company.EmployeeRecord> records = company.getRecords();
+        if (records.isEmpty()) {
+            System.out.println("[!] Колекція порожня — нема чого сортувати.");
+            return;
+        }
+
+        // Копіюємо, щоб не змінювати оригінальний порядок у компанії
+        List<Company.EmployeeRecord> sorted = new ArrayList<>(records);
+        sorted.sort((r1, r2) -> r1.getEmployee().compareTo(r2.getEmployee()));
+
+        for (int i = 0; i < sorted.size(); i++) {
+            System.out.printf("%d. %s%n", i + 1, sorted.get(i));
+        }
+        System.out.println("Всього записів: " + sorted.size()
                 + " | Всього працівників: " + company.getTotalEmployeeCount());
     }
 
@@ -389,7 +413,8 @@ public class Main {
 
         switch (type) {
             case "Employee":
-                return new Employee(name, age, salary, experience, position, department);
+                // Employee тепер абстрактний — конвертуємо у FullTimeEmployee з нульовою премією
+                return new FullTimeEmployee(name, age, salary, experience, position, department, 0);
 
             case "FullTimeEmployee":
                 if (parts.length < 8) throw new IllegalArgumentException("Недостатньо полів для FullTimeEmployee");
@@ -473,21 +498,6 @@ public class Main {
                 System.out.println("[!] Помилка: " + e.getMessage() + ". Спробуйте ще раз.");
             }
         }
-    }
-
-    /**
-     * Зчитує дані з клавіатури та створює нового працівника.
-     * При помилці валідації виводить повідомлення і повертається до меню.
-     */
-    private static Employee createEmployee() {
-        System.out.println("\n--- Новий працівник ---");
-        String name       = readNonBlank("ПІБ: ");
-        int    age        = readInt("Вік (18–65): ");
-        double salary     = readDouble("Місячна зарплата (грн): ");
-        int    experience = readInt("Стаж роботи (років): ");
-        Position   position   = readPosition();
-        Department department = readDepartment();
-        return new Employee(name, age, salary, experience, position, department);
     }
 
     /**

@@ -2,7 +2,7 @@
  * Клас представляє працівника підприємства.
  * Усі поля перевіряються при створенні та зміні.
  */
-public class Employee {
+public abstract class Employee implements Comparable<Employee> {
 
     private String name;       // ПІБ працівника
     private int age;           // Вік (18–65)
@@ -140,11 +140,18 @@ public class Employee {
         this.department = department;
     }
 
-    /** @return рядкове представлення об'єкта */
+    /**
+     * Порівнює двох працівників за ПІБ (без урахування регістру).
+     *
+     * @param other інший працівник для порівняння
+     * @return від'ємне, нульове або додатне значення відповідно до порядку сортування
+     */
     @Override
-    public String toString() {
-        return String.format(
-                "{ПІБ='%s', вік=%d, зарплата=%.2f грн, стаж=%d р., посада='%s', відділ='%s'}",
-                name, age, salary, experience, position, department);
+    public int compareTo(Employee other) {
+        return this.name.compareToIgnoreCase(other.name);
     }
+
+    /** @return рядкове представлення об'єкта (реалізується в кожному підкласі) */
+    @Override
+    public abstract String toString();
 }
