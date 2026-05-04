@@ -225,33 +225,13 @@ public class Main {
             return;
         }
 
-        // Анонімний внутрішній клас — сортування за ПІБ
-        Comparator<Company.EmployeeRecord> byName = new Comparator<Company.EmployeeRecord>() {
-            // Створюємо екземпляр Collator для української мови
-            private final Collator collator = Collator.getInstance(new Locale("uk", "UA"));
+        final Collator collator = Collator.getInstance(new Locale("uk", "UA"));
+        collator.setStrength(Collator.TERTIARY);
+        Comparator<Company.EmployeeRecord> byName = (r1, r2) -> collator.compare(r1.getEmployee().getName(), r2.getEmployee().getName());
 
-            @Override
-            public int compare(Company.EmployeeRecord r1, Company.EmployeeRecord r2) {
-                collator.setStrength(Collator.TERTIARY);
-                return collator.compare(r1.getEmployee().getName(), r2.getEmployee().getName());
-            }
-        };
+        Comparator<Company.EmployeeRecord> bySalaryAsc = (r1, r2) -> Double.compare(r1.getEmployee().getSalary(), r2.getEmployee().getSalary());
 
-        // Анонімний внутрішній клас — сортування за зарплатою за зростанням
-        Comparator<Company.EmployeeRecord> bySalaryAsc = new Comparator<Company.EmployeeRecord>() {
-            @Override
-            public int compare(Company.EmployeeRecord r1, Company.EmployeeRecord r2) {
-                return Double.compare(r1.getEmployee().getSalary(), r2.getEmployee().getSalary());
-            }
-        };
-
-        // Анонімний внутрішній клас — сортування за стажем за спаданням
-        Comparator<Company.EmployeeRecord> byExperienceDesc = new Comparator<Company.EmployeeRecord>() {
-            @Override
-            public int compare(Company.EmployeeRecord r1, Company.EmployeeRecord r2) {
-                return Integer.compare(r2.getEmployee().getExperience(), r1.getEmployee().getExperience());
-            }
-        };
+        Comparator<Company.EmployeeRecord> byExperienceDesc = (r1, r2) -> Integer.compare(r2.getEmployee().getExperience(), r1.getEmployee().getExperience());
 
         Comparator<Company.EmployeeRecord> comparator;
         String criteriaLabel;
