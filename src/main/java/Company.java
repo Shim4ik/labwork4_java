@@ -204,6 +204,70 @@ public class Company {
         return result;
     }
 
+    /**
+     * Оновлює дані існуючого запису працівника.
+     * Пошук виконується за UUID. Оновлюються всі поля через сеттери з валідацією,
+     * а також специфічні поля підкласу (якщо типи збігаються).
+     *
+     * @param existingObject об'єкт, що потрібно оновити (не null)
+     * @param newObject      об'єкт з новими даними (не null, той самий підклас)
+     * @return {@code true} якщо оновлення виконано, {@code false} якщо не знайдено
+     * @throws InvalidEmployeeDataException якщо параметри null або типи різняться
+     */
+    public boolean update(Employee existingObject, Employee newObject) {
+        if (existingObject == null || newObject == null)
+            throw new InvalidEmployeeDataException("Об'єкти не можуть бути null.");
+        if (!existingObject.getClass().equals(newObject.getClass()))
+            throw new InvalidEmployeeDataException(
+                    "Типи об'єктів мають збігатися. Існуючий: "
+                            + existingObject.getClass().getSimpleName()
+                            + ", новий: " + newObject.getClass().getSimpleName());
+
+        for (EmployeeRecord record : records) {
+            if (record.getEmployee().getUuid().equals(existingObject.getUuid())) {
+                Employee target = record.getEmployee();
+                // Спільні поля
+                target.setName(newObject.getName());
+                target.setAge(newObject.getAge());
+                target.setSalary(newObject.getSalary());
+                target.setExperience(newObject.getExperience());
+                target.setPosition(newObject.getPosition());
+                target.setDepartment(newObject.getDepartment());
+                // Специфічні поля підкласів
+                if (target instanceof RemoteEmployee re && newObject instanceof RemoteEmployee rn) {
+                    re.setCountry(rn.getCountry());
+                    re.setHourlyRate(rn.getHourlyRate());
+                } else if (target instanceof InternEmployee ie && newObject instanceof InternEmployee in) {
+                    ie.setUniversity(in.getUniversity());
+                    ie.setInternshipDuration(in.getInternshipDuration());
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Видаляє запис працівника з колекції за UUID.
+     *
+     * @param existingObject об'єкт для видалення (не null)
+     * @return {@code true} якщо видалення виконано, {@code false} якщо не знайдено
+     * @throws InvalidEmployeeDataException якщо existingObject є null
+     */
+    public boolean delete(Employee existingObject) {
+        if (existingObject == null)
+            throw new InvalidEmployeeDataException("Об'єкт для видалення не може бути null.");
+
+        java.util.Iterator<EmployeeRecord> it = records.iterator();
+        while (it.hasNext()) {
+            if (it.next().getEmployee().getUuid().equals(existingObject.getUuid())) {
+                it.remove();
+                return true;
+            }
+        }
+        return false;
+    }
+
     // -------------------------------------------------------------------------
     // Виведення
     // -------------------------------------------------------------------------

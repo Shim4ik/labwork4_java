@@ -43,10 +43,12 @@ public class Main {
             switch (choice) {
                 case 1 -> runSearchMenu();
                 case 2 -> createObject();
-                case 3 -> listEmployees();
-                case 4 -> listEmployeesSorted();
-                case 5 -> showCompanyInfo();
-                case 6 -> { saveToFile(); System.out.println("До побачення!"); running = false; }
+                case 3 -> modifyEmployee();
+                case 4 -> deleteEmployee();
+                case 5 -> listEmployees();
+                case 6 -> listEmployeesSorted();
+                case 7 -> showCompanyInfo();
+                case 8 -> { saveToFile(); System.out.println("До побачення!"); running = false; }
                 default -> System.out.println("[!] Невірний пункт. Введіть 1-5.");
             }
         }
@@ -59,10 +61,12 @@ public class Main {
         System.out.println("╠═══════════════════════════════════════╣");
         System.out.println("║  1. Пошук об'єкта                     ║");
         System.out.println("║  2. Створити новий об'єкт             ║");
-        System.out.println("║  3. Вивести інформацію про всі об'єкти║");
-        System.out.println("║  4. Вивести відсортовану інформацію   ║");
-        System.out.println("║  5. Інформація про компанію           ║");
-        System.out.println("║  6. Зберегти та завершити             ║");
+        System.out.println("║  3. Модифікувати об'єкт               ║");
+        System.out.println("║  4. Видалити об'єкт                   ║");
+        System.out.println("║  5. Вивести інформацію про всі об'єкти║");
+        System.out.println("║  6. Вивести відсортовану інформацію   ║");
+        System.out.println("║  7. Інформація про компанію           ║");
+        System.out.println("║  8. Зберегти та завершити             ║");
         System.out.println("╚═══════════════════════════════════════╝");
     }
 
@@ -167,6 +171,162 @@ public class Main {
         } else {
             System.out.println("[+] Знайдено:");
             System.out.println("    " + result);
+        }
+    }
+
+    /**
+     * Інтерактивно вибирає запис, атрибут для зміни та застосовує update().
+     */
+    private static void modifyEmployee() {
+        System.out.println("\n--- Модифікувати працівника ---");
+        List<Company.EmployeeRecord> records = company.getRecords();
+        if (records.isEmpty()) {
+            System.out.println("[!] Колекція порожня — нема кого модифікувати.");
+            return;
+        }
+
+        for (int i = 0; i < records.size(); i++) {
+            System.out.printf("%d. %s%n", i + 1, records.get(i).toShortString());
+        }
+        System.out.println("0. Скасувати");
+
+        int idx = readInt("Оберіть запис для модифікації: ");
+        if (idx == 0) { System.out.println("[*] Скасовано."); return; }
+        if (idx < 1 || idx > records.size()) {
+            System.out.println("[!] Невірний номер запису.");
+            return;
+        }
+
+        Employee target = records.get(idx - 1).getEmployee();
+        System.out.println("[*] Обрано: " + target.toShortString());
+
+        System.out.println("\nОберіть атрибут для зміни:");
+        System.out.println("1. ПІБ");
+        System.out.println("2. Вік");
+        System.out.println("3. Зарплата");
+        System.out.println("4. Стаж");
+        System.out.println("5. Посада");
+        System.out.println("6. Відділ");
+        if (target instanceof RemoteEmployee) {
+            System.out.println("7. Країна проживання");
+            System.out.println("8. Погодинна ставка ($/год)");
+        } else if (target instanceof InternEmployee) {
+            System.out.println("7. Університет");
+            System.out.println("8. Тривалість стажування (міс.)");
+        }
+        System.out.println("0. Скасувати");
+
+        int attr = readInt("Ваш вибір: ");
+        if (attr == 0) { System.out.println("[*] Скасовано."); return; }
+
+        try {
+            Employee updated = cloneWithChange(target, attr);
+            if (updated == null) return;
+
+            boolean ok = company.update(target, updated);
+            if (ok) {
+                System.out.println("[+] Дані успішно оновлено.");
+                System.out.println("    " + target);
+            } else {
+                System.out.println("[!] Запис не знайдено — оновлення не виконано.");
+            }
+        } catch (InvalidEmployeeDataException e) {
+            System.out.println("[!] Помилка валідації: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Створює копію працівника з одним зміненим полем для передачі у update().
+     *
+     * @return оновлений об'єкт або null, якщо attr некоректний
+     */
+    private static Employee cloneWithChange(Employee src, int attr) {
+        String     name       = src.getName();
+        int        age        = src.getAge();
+        double     salary     = src.getSalary();
+        int        experience = src.getExperience();
+        Position   position   = src.getPosition();
+        Department department = src.getDepartment();
+
+        switch (attr) {
+            case 1 -> name       = readNonBlank("Нове ПІБ: ");
+            case 2 -> age        = readInt("Новий вік (18–65): ");
+            case 3 -> salary     = readDouble("Нова зарплата (грн): ");
+            case 4 -> experience = readInt("Новий стаж (років): ");
+            case 5 -> position   = readPosition();
+            case 6 -> department = readDepartment();
+            case 7, 8 -> { /* обробляється у блоках підкласів нижче */ }
+            default -> { System.out.println("[!] Невідомий атрибут."); return null; }
+        }
+
+        if (src instanceof FullTimeEmployee fte) {
+            return new FullTimeEmployee(name, age, salary, experience,
+                    position, department, fte.getBonusPercentage());
+
+        } else if (src instanceof ContractEmployee ce) {
+            return new ContractEmployee(name, age, salary, experience,
+                    position, department, ce.getContractDurationMonths());
+
+        } else if (src instanceof RemoteEmployee re) {
+            String country    = re.getCountry();
+            double hourlyRate = re.getHourlyRate();
+            if (attr == 7) country    = readNonBlank("Нова країна проживання: ");
+            if (attr == 8) hourlyRate = readDouble("Нова погодинна ставка ($/год): ");
+            return new RemoteEmployee(name, age, salary, experience,
+                    position, department, country, hourlyRate);
+
+        } else if (src instanceof InternEmployee ie) {
+            String university = ie.getUniversity();
+            int    duration   = ie.getInternshipDuration();
+            if (attr == 7) university = readNonBlank("Новий університет: ");
+            if (attr == 8) duration   = readInt("Нова тривалість стажування (міс., 1–12): ");
+            return new InternEmployee(name, age, salary, experience,
+                    position, department, university, duration);
+        }
+
+        System.out.println("[!] Невідомий тип працівника.");
+        return null;
+    }
+
+    /**
+     * Інтерактивно вибирає запис і видаляє його через delete().
+     */
+    private static void deleteEmployee() {
+        System.out.println("\n--- Видалити працівника ---");
+        List<Company.EmployeeRecord> records = company.getRecords();
+        if (records.isEmpty()) {
+            System.out.println("[!] Колекція порожня — нема кого видаляти.");
+            return;
+        }
+
+        for (int i = 0; i < records.size(); i++) {
+            System.out.printf("%d. %s%n", i + 1, records.get(i).toShortString());
+        }
+        System.out.println("0. Скасувати");
+
+        int idx = readInt("Оберіть запис для видалення: ");
+        if (idx == 0) { System.out.println("[*] Скасовано."); return; }
+        if (idx < 1 || idx > records.size()) {
+            System.out.println("[!] Невірний номер запису.");
+            return;
+        }
+
+        Employee target = records.get(idx - 1).getEmployee();
+        System.out.println("[*] Обрано: " + target.toShortString());
+
+        System.out.print("Підтвердіть видалення (так/ні): ");
+        String confirm = scanner.nextLine().trim().toLowerCase();
+        if (!confirm.equals("так") && !confirm.equals("т")
+                && !confirm.equals("yes") && !confirm.equals("y")) {
+            System.out.println("[*] Видалення скасовано.");
+            return;
+        }
+
+        boolean ok = company.delete(target);
+        if (ok) {
+            System.out.println("[+] Запис успішно видалено.");
+        } else {
+            System.out.println("[!] Запис не знайдено — видалення не виконано.");
         }
     }
 
