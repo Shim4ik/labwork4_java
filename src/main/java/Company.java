@@ -33,10 +33,7 @@ public class Company {
         public Employee getEmployee() { return employee; }
         public int getQuantity()      { return quantity; }
 
-        /** Збільшує кількість на задане значення. */
-        public void addQuantity(int amount) {
-            this.quantity += amount;
-        }
+        public void addQuantity(int amount) { this.quantity += amount; }
 
         /** Скорочений рядок для списку GUI */
         public String toShortString() {
@@ -46,9 +43,16 @@ public class Company {
                     e.getName(),
                     e.getUuid().toString().substring(0, 8));
         }
+
+        @Override
+        public String toString() {
+            return String.format("[%s] %s  (кількість: %d)",
+                    employee.getClass().getSimpleName(), employee, quantity);
+        }
     }
 
-/**
+
+    /**
      * Створює компанію з базовими параметрами.
      *
      * @param name        назва компанії (не порожня)
