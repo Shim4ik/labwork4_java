@@ -1,25 +1,30 @@
 /**
- * Виняток, що виникає при передачі некоректних даних у клас {@link Employee}.
- * Розширює {@link IllegalArgumentException}.
+ * Виняток, що виникає при передачі некоректного значення поля
+ * у сеттери або конструктори класів предметної області.
  */
 public class InvalidEmployeeDataException extends IllegalArgumentException {
 
-    /**
-     * Створює виняток із повідомленням про помилку.
-     *
-     * @param message опис помилки валідації
-     */
-    public InvalidEmployeeDataException(String message) {
-        super(message);
-    }
+    /** Назва поля, яке містить некоректне значення. */
+    private final String fieldName;
 
     /**
-     * Створює виняток із повідомленням і першопричиною.
+     * Створює виняток із назвою поля та повідомленням про помилку.
      *
-     * @param message опис помилки валідації
-     * @param cause   початкова причина виникнення помилки
+     * @param fieldName назва некоректного поля
+     * @param message   опис помилки валідації
      */
-    public InvalidEmployeeDataException(String message, Throwable cause) {
-        super(message, cause);
+    public InvalidEmployeeDataException(String fieldName, String message) {
+        super(message);
+        this.fieldName = fieldName;
+    }
+
+    /** @return назва поля, що спричинило виняток */
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    @Override
+    public String getMessage() {
+        return "[Поле: " + fieldName + "] " + super.getMessage();
     }
 }

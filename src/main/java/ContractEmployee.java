@@ -18,7 +18,7 @@ public class ContractEmployee extends Employee {
         super(name, age, salary, experience, position, department);
 
         if (contractDurationMonths < 1 || contractDurationMonths > 60) {
-            throw new InvalidEmployeeDataException(
+            throw new InvalidEmployeeDataException("contractDurationMonths",
                     "Тривалість контракту має бути від 1 до 60 місяців. Отримано: " + contractDurationMonths);
         }
         this.contractDurationMonths = contractDurationMonths;

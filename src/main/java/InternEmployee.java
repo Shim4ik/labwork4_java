@@ -47,7 +47,7 @@ public class InternEmployee extends Employee {
      */
     public void setUniversity(String university) {
         if (university == null || university.isBlank()) {
-            throw new InvalidEmployeeDataException("Назва університету не може бути порожньою.");
+            throw new InvalidEmployeeDataException("university", "Назва університету не може бути порожньою.");
         }
         this.university = university.trim();
     }
@@ -60,7 +60,7 @@ public class InternEmployee extends Employee {
      */
     public void setInternshipDuration(int internshipDuration) {
         if (internshipDuration < 1 || internshipDuration > 12) {
-            throw new InvalidEmployeeDataException(
+            throw new InvalidEmployeeDataException("internshipDuration",
                     "Тривалість стажування має бути від 1 до 12 місяців. Отримано: " + internshipDuration);
         }
         this.internshipDuration = internshipDuration;
