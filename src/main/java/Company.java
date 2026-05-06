@@ -38,14 +38,17 @@ public class Company {
             this.quantity += amount;
         }
 
-        @Override
-        public String toString() {
-            return String.format("[%s] %s  (кількість: %d)",
-                    employee.getClass().getSimpleName(), employee, quantity);
+        /** Скорочений рядок для списку GUI */
+        public String toShortString() {
+            Employee e = employee;
+            return String.format("[%s] %s | UUID: %s...",
+                    e.getClass().getSimpleName(),
+                    e.getName(),
+                    e.getUuid().toString().substring(0, 8));
         }
     }
 
-    /**
+/**
      * Створює компанію з базовими параметрами.
      *
      * @param name        назва компанії (не порожня)

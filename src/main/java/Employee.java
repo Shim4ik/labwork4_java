@@ -147,6 +147,14 @@ public abstract class Employee implements Comparable<Employee>, Identifiable {
         this.department = department;
     }
 
+
+    /**
+     * Скорочений рядок для списку: ПІБ + перші 8 символів UUID.
+     */
+    public String toShortString() {
+        return getName() + " | UUID: " + uuid.toString().substring(0, 8) + "...";
+    }
+
     /**
      * Порівнює двох працівників за ПІБ (без урахування регістру).
      *
