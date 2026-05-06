@@ -70,8 +70,8 @@ public class InternEmployee extends Employee {
     @Override
     public String toString() {
         return String.format(
-                "{ПІБ='%s', вік=%d, зарплата=%.2f грн, стаж=%d р., посада='%s', відділ='%s', університет='%s', стажування=%d міс.}",
-                getName(), getAge(), getSalary(), getExperience(),
+                "[%s] %n   {ПІБ='%s', вік=%d, зарплата=%.2f грн, стаж=%d р., посада='%s', відділ='%s', університет='%s', стажування=%d міс.}",
+                getUuid(), getName(), getAge(), getSalary(), getExperience(),
                 getPosition(), getDepartment(), university, internshipDuration);
     }
 }

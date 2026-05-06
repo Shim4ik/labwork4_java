@@ -33,7 +33,7 @@ public class FullTimeEmployee extends Employee {
     @Override
     public String toString() {
         return String.format(
-                "{ПІБ='%s', вік=%d, зарплата=%.2f грн, стаж=%d р., посада='%s', відділ='%s', премія=%.1f%%}",
-                getName(), getAge(), getSalary(), getExperience(), getPosition(), getDepartment(), bonusPercentage);
+                "[%s] %n   {ПІБ='%s', вік=%d, зарплата=%.2f грн, стаж=%d р., посада='%s', відділ='%s', премія=%.1f%%}",
+                getUuid(),getName(), getAge(), getSalary(), getExperience(), getPosition(), getDepartment(), bonusPercentage);
     }
 }

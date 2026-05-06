@@ -1,12 +1,12 @@
-import java.text.Collator;
-import java.util.Locale;
+import java.util.UUID;
 
 /**
  * Клас представляє працівника підприємства.
  * Усі поля перевіряються при створенні та зміні.
  */
-public abstract class Employee implements Comparable<Employee> {
+public abstract class Employee implements Comparable<Employee>, Identifiable {
 
+    private final UUID uuid;
     private String name;       // ПІБ працівника
     private int age;           // Вік (18–65)
     private double salary;     // Місячна зарплата в гривнях
@@ -27,6 +27,7 @@ public abstract class Employee implements Comparable<Employee> {
      */
     public Employee(String name, int age, double salary, int experience,
                     Position position, Department department) {
+        this.uuid = UUID.randomUUID();
         setName(name);
         setAge(age);
         setSalary(salary);
@@ -34,6 +35,9 @@ public abstract class Employee implements Comparable<Employee> {
         setPosition(position);
         setDepartment(department);
     }
+
+    @Override
+    public UUID getUuid() { return uuid; }
 
     // Геттери
 
@@ -151,12 +155,7 @@ public abstract class Employee implements Comparable<Employee> {
      */
     @Override
     public int compareTo(Employee other) {
-        Collator ukrainianCollator = Collator.getInstance(new Locale("uk", "UA"));
-
-        // Встановлюємо силу порівняння TERTIARY (враховує і букви, і регістр, і акценти)
-        ukrainianCollator.setStrength(Collator.TERTIARY);
-
-        return ukrainianCollator.compare(this.name, other.name);
+        return this.name.compareToIgnoreCase(other.name);
     }
 
     /** @return рядкове представлення об'єкта (реалізується в кожному підкласі) */

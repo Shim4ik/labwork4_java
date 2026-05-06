@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Клас представляє компанію, яка зберігає колекцію працівників.
@@ -129,6 +130,21 @@ public class Company {
                 && a.getName().equalsIgnoreCase(b.getName())
                 && a.getPosition() == b.getPosition()
                 && a.getDepartment() == b.getDepartment();
+    }
+
+    /**
+     * Знаходить запис за UUID працівника.
+     *
+     * @param uuid UUID для пошуку
+     * @return знайдений запис або null
+     */
+    public EmployeeRecord findByUuid(UUID uuid) {
+        for (EmployeeRecord record : records) {
+            if (record.getEmployee().getUuid().equals(uuid)) {
+                return record;
+            }
+        }
+        return null;
     }
 
     /**

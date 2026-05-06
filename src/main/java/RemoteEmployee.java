@@ -70,8 +70,8 @@ public class RemoteEmployee extends Employee {
     @Override
     public String toString() {
         return String.format(
-                "{ПІБ='%s', вік=%d, зарплата=%.2f грн, стаж=%d р., посада='%s', відділ='%s', країна='%s', ставка=%.2f$/год}",
-                getName(), getAge(), getSalary(), getExperience(),
+                "[%s] %n   {ПІБ='%s', вік=%d, зарплата=%.2f грн, стаж=%d р., посада='%s', відділ='%s', країна='%s', ставка=%.2f$/год}",
+                getUuid(), getName(), getAge(), getSalary(), getExperience(),
                 getPosition(), getDepartment(), country, hourlyRate);
     }
 }

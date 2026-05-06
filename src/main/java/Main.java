@@ -5,7 +5,7 @@ import java.io.*;
 import java.util.Comparator;
 import java.text.Collator;
 import java.util.Locale;
-
+import java.util.UUID;
 
 /**
  * Головний клас програми. Реалізує консольне меню для керування компанією та її працівниками.
@@ -74,6 +74,7 @@ public class Main {
             System.out.println("1. Пошук за діапазоном зарплати");
             System.out.println("2. Пошук запосадою");
             System.out.println("3. Пошук за відділом");
+            System.out.println("4. Пошук за UUID");
             System.out.println("0. Повернутися до головного меню");
 
             int choice = readInt("Ваш вибір: ");
@@ -81,6 +82,7 @@ public class Main {
                 case 1 -> searchBySalaryRange();
                 case 2 -> searchByPosition();
                 case 3 -> searchByDepartment();
+                case 4 -> searchByUuid();
                 case 0 -> inSearch = false;
                 default -> System.out.println("[!] Невірний пункт. Спробуйте ще раз.");
             }
@@ -146,6 +148,28 @@ public class Main {
         }
     }
 
+    private static void searchByUuid() {
+        System.out.println("\n--- Пошук за UUID ---");
+        System.out.print("Введіть UUID (або перші 8 символів не підійдуть — потрібен повний): ");
+        String input = scanner.nextLine().trim();
+
+        UUID uuid;
+        try {
+            uuid = UUID.fromString(input);
+        } catch (IllegalArgumentException e) {
+            System.out.println("[!] Некоректний формат UUID. Приклад: 550e8400-e29b-41d4-a716-446655440000");
+            return;
+        }
+
+        Company.EmployeeRecord result = company.findByUuid(uuid);
+        if (result == null) {
+            System.out.println("[!] Працівника з UUID " + uuid + " не знайдено.");
+        } else {
+            System.out.println("[+] Знайдено:");
+            System.out.println("    " + result);
+        }
+    }
+
     /**
      * Показує підменю вибору типу об'єкта та делегує створення
      * відповідному методу. Надає можливість повернення до головного меню.
@@ -194,7 +218,7 @@ public class Main {
         for (int i = 0; i < records.size(); i++) {
             System.out.printf("%d. %s%n", i + 1, records.get(i));
         }
-        System.out.println("Всього записів: " + records.size()
+        System.out.println("   Всього записів: " + records.size()
                 + " | Всього працівників: " + company.getTotalEmployeeCount());
     }
 
