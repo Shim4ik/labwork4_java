@@ -161,13 +161,13 @@ public class Main {
         try {
             uuid = UUID.fromString(input);
         } catch (IllegalArgumentException e) {
-            System.out.println("[!] Некоректний формат UUID. Приклад: 550e8400-e29b-41d4-a716-446655440000");
+            System.out.println("[!] Некоректний формат UUID. Приклад:3");
             return;
         }
 
         Company.EmployeeRecord result = company.findByUuid(uuid);
         if (result == null) {
-            System.out.println("[!] Працівника з UUID " + uuid + " не знайдено.");
+            throw new ObjectNotFoundException("Працівника з UUID " + uuid + " не знайдено.");
         } else {
             System.out.println("[+] Знайдено:");
             System.out.println("    " + result);
@@ -228,7 +228,7 @@ public class Main {
                 System.out.println("[+] Дані успішно оновлено.");
                 System.out.println("    " + target);
             } else {
-                System.out.println("[!] Запис не знайдено — оновлення не виконано.");
+                throw new ObjectNotFoundException("Не вдалося оновити працівника. Запис не знайдено.");
             }
         } catch (InvalidEmployeeDataException e) {
             System.out.println("[!] Помилка валідації: " + e.getMessage());
@@ -326,7 +326,7 @@ public class Main {
         if (ok) {
             System.out.println("[+] Запис успішно видалено.");
         } else {
-            System.out.println("[!] Запис не знайдено — видалення не виконано.");
+            throw new ObjectNotFoundException("Не вдалося видалити працівника. Запис не знайдено.");
         }
     }
 

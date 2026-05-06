@@ -47,7 +47,7 @@ public class RemoteEmployee extends Employee {
      */
     public void setCountry(String country) {
         if (country == null || country.isBlank()) {
-            throw new InvalidEmployeeDataException("Країна проживання не може бути порожньою.");
+            throw new InvalidEmployeeDataException("country", "Країна проживання не може бути порожньою.");
         }
         this.country = country.trim();
     }
@@ -60,7 +60,7 @@ public class RemoteEmployee extends Employee {
      */
     public void setHourlyRate(double hourlyRate) {
         if (hourlyRate <= 0) {
-            throw new InvalidEmployeeDataException(
+            throw new InvalidEmployeeDataException("hourlyRate",
                     "Погодинна ставка повинна бути більше нуля. Отримано: " + hourlyRate);
         }
         this.hourlyRate = hourlyRate;

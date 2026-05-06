@@ -74,19 +74,19 @@ public class Company {
 
     public void setName(String name) {
         if (name == null || name.isBlank())
-            throw new InvalidEmployeeDataException("Назва компанії не може бути порожньою.");
+            throw new InvalidEmployeeDataException("name", "Назва компанії не може бути порожньою.");
         this.name = name.trim();
     }
 
     public void setIndustry(String industry) {
         if (industry == null || industry.isBlank())
-            throw new InvalidEmployeeDataException("Сфера діяльності не може бути порожньою.");
+            throw new InvalidEmployeeDataException("industry", "Сфера діяльності не може бути порожньою.");
         this.industry = industry.trim();
     }
 
     public void setFoundedYear(int foundedYear) {
         if (foundedYear < 1800)
-            throw new InvalidEmployeeDataException(
+            throw new InvalidEmployeeDataException("foundedYear",
                     "Рік заснування не може бути меншим за 1800. Отримано: " + foundedYear);
         this.foundedYear = foundedYear;
     }
@@ -112,9 +112,9 @@ public class Company {
      */
     public void addNewEmployee(Employee emp, int quantity) {
         if (emp == null)
-            throw new InvalidEmployeeDataException("Працівник не може бути null.");
+            throw new InvalidEmployeeDataException("employee", "Працівник не може бути null.");
         if (quantity < 1)
-            throw new InvalidEmployeeDataException(
+            throw new InvalidEmployeeDataException("quantity",
                     "Кількість має бути >= 1. Отримано: " + quantity);
 
         // Шукаємо існуючий запис із таким самим типом та ім'ям
@@ -216,9 +216,9 @@ public class Company {
      */
     public boolean update(Employee existingObject, Employee newObject) {
         if (existingObject == null || newObject == null)
-            throw new InvalidEmployeeDataException("Об'єкти не можуть бути null.");
+            throw new InvalidEmployeeDataException("employee", "Об'єкти не можуть бути null.");
         if (!existingObject.getClass().equals(newObject.getClass()))
-            throw new InvalidEmployeeDataException(
+            throw new InvalidEmployeeDataException("employeeType",
                     "Типи об'єктів мають збігатися. Існуючий: "
                             + existingObject.getClass().getSimpleName()
                             + ", новий: " + newObject.getClass().getSimpleName());
@@ -244,7 +244,8 @@ public class Company {
                 return true;
             }
         }
-        return false;
+        throw new ObjectNotFoundException(
+                "Працівника з UUID " + existingObject.getUuid() + " не знайдено в колекції.");
     }
 
     /**
@@ -256,7 +257,7 @@ public class Company {
      */
     public boolean delete(Employee existingObject) {
         if (existingObject == null)
-            throw new InvalidEmployeeDataException("Об'єкт для видалення не може бути null.");
+            throw new InvalidEmployeeDataException("employee", "Об'єкт для видалення не може бути null.");
 
         java.util.Iterator<EmployeeRecord> it = records.iterator();
         while (it.hasNext()) {
@@ -265,7 +266,8 @@ public class Company {
                 return true;
             }
         }
-        return false;
+        throw new ObjectNotFoundException(
+                "Працівника з UUID " + existingObject.getUuid() + " не знайдено в колекції. Видалення неможливе.");
     }
 
     // -------------------------------------------------------------------------

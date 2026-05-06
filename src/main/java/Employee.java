@@ -69,7 +69,7 @@ public abstract class Employee implements Comparable<Employee>, Identifiable {
      */
     public void setName(String name) {
         if (name == null || name.isBlank()) {
-            throw new InvalidEmployeeDataException("ПІБ не може бути порожнім.");
+            throw new InvalidEmployeeDataException("name", "ПІБ не може бути порожнім.");
         }
         this.name = name.trim();
     }
@@ -82,7 +82,7 @@ public abstract class Employee implements Comparable<Employee>, Identifiable {
      */
     public void setAge(int age) {
         if (age < 18 || age > 65) {
-            throw new InvalidEmployeeDataException(
+            throw new InvalidEmployeeDataException("age",
                     "Вік повинен бути від 18 до 65. Отримано: " + age);
         }
         this.age = age;
@@ -96,7 +96,7 @@ public abstract class Employee implements Comparable<Employee>, Identifiable {
      */
     public void setSalary(double salary) {
         if (salary <= 0) {
-            throw new InvalidEmployeeDataException(
+            throw new InvalidEmployeeDataException("salary",
                     "Зарплата повинна бути більше нуля. Отримано: " + salary);
         }
         this.salary = salary;
@@ -111,11 +111,11 @@ public abstract class Employee implements Comparable<Employee>, Identifiable {
      */
     public void setExperience(int experience) {
         if (experience < 0) {
-            throw new InvalidEmployeeDataException(
+            throw new InvalidEmployeeDataException("experience",
                     "Стаж не може бути від'ємним. Отримано: " + experience);
         }
         if (experience > this.age - 18) {
-            throw new InvalidEmployeeDataException(
+            throw new InvalidEmployeeDataException("experience",
                     "Стаж (" + experience + ") перевищує можливий для віку " + this.age + ".");
         }
         this.experience = experience;
@@ -129,7 +129,7 @@ public abstract class Employee implements Comparable<Employee>, Identifiable {
      */
     public void setPosition(Position position) {
         if (position == null) {
-            throw new InvalidEmployeeDataException("Посада не може бути порожньою.");
+            throw new InvalidEmployeeDataException("position", "Посада не може бути порожньою.");
         }
         this.position = position;
     }
@@ -142,7 +142,7 @@ public abstract class Employee implements Comparable<Employee>, Identifiable {
      */
     public void setDepartment(Department department) {
         if (department == null) {
-            throw new InvalidEmployeeDataException("Відділ не може бути порожнім.");
+            throw new InvalidEmployeeDataException("position", "Відділ не може бути порожнім.");
         }
         this.department = department;
     }

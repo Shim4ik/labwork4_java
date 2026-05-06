@@ -191,7 +191,7 @@ public class MainApp extends Application {
                 case "InternEmployee"   ->
                         new InternEmployee(name, age, salary, exp, pos, dep,
                                 extraField1.getText().trim(), pi(extraField2,"Тривалість стажування"));
-                default -> throw new InvalidEmployeeDataException("Невідомий тип.");
+                default -> throw new InvalidEmployeeDataException("", "Невідомий тип.");
             };
 
             company.addNewEmployee(emp, 1);
@@ -420,11 +420,11 @@ public class MainApp extends Application {
 
     private int    pi(TextField f, String name) {
         try { return Integer.parseInt(f.getText().trim()); }
-        catch (NumberFormatException e) { throw new InvalidEmployeeDataException("«"+name+"» — ціле число. Введено: \""+f.getText().trim()+"\""); }
+        catch (NumberFormatException e) { throw new InvalidEmployeeDataException("", "«"+name+"» — ціле число. Введено: \""+f.getText().trim()+"\""); }
     }
     private double pd(TextField f, String name) {
         try { return Double.parseDouble(f.getText().trim().replace(',','.')); }
-        catch (NumberFormatException e) { throw new InvalidEmployeeDataException("«"+name+"» — число. Введено: \""+f.getText().trim()+"\""); }
+        catch (NumberFormatException e) { throw new InvalidEmployeeDataException("", "«"+name+"» — число. Введено: \""+f.getText().trim()+"\""); }
     }
 
     private Label label(String text) {

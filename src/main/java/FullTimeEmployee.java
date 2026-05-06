@@ -18,7 +18,7 @@ public class FullTimeEmployee extends Employee {
         super(name, age, salary, experience, position, department);
 
         if (bonusPercentage < 0 || bonusPercentage > 50) {
-            throw new InvalidEmployeeDataException(
+            throw new InvalidEmployeeDataException("bonusPercentage",
                     "Відсоток премії повинен бути в межах від 0 до 50%. Отримано: " + bonusPercentage);
         }
         this.bonusPercentage = bonusPercentage;
